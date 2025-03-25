@@ -6,6 +6,7 @@ import com.ll.auth.domain.post.post.service.PostService;
 import com.ll.auth.global.rsData.RsData;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +79,9 @@ public class ApiV1PostController {
             String title,
             @NotBlank
             @Length(min = 2)
-            String content
+            String content,
+            @NotNull
+            Long authorId
     ) {
     }
 
