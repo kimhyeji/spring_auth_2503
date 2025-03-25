@@ -65,7 +65,12 @@ public class ApiV1PostController {
             String title,
             @NotBlank
             @Length(min = 2)
-            String content
+            String content,
+            @NotNull
+            Long authorId,
+            @NotNull
+            @Length(min = 4)
+            String password
     ) {
     }
 
@@ -76,6 +81,11 @@ public class ApiV1PostController {
             @RequestBody @Valid PostModifyReqBody reqBody
     ) {
         Post post = postService.findById(id).get();
+
+        Member actor = memberService.findById(reqBody.authorId).get();
+
+        if (!actor.getPassword().equals(reqBody.password))
+            throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
 
         postService.modify(post, reqBody.title, reqBody.content);
 
