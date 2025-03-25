@@ -1,5 +1,7 @@
 package com.ll.auth.domain.post.post.controller;
 
+import com.ll.auth.domain.member.member.entity.Member;
+import com.ll.auth.domain.member.member.service.MemberService;
 import com.ll.auth.domain.post.post.dto.PostDto;
 import com.ll.auth.domain.post.post.entity.Post;
 import com.ll.auth.domain.post.post.service.PostService;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApiV1PostController {
     private final PostService postService;
+    private final MemberService memberService;
 
     @GetMapping
     public List<PostDto> getItems() {
@@ -29,16 +32,23 @@ public class ApiV1PostController {
                 .toList();
     }
 
+
     @GetMapping("/{id}")
-    public PostDto getItem(@PathVariable long id) {
+    public PostDto getItem(
+            @PathVariable long id
+    ) {
         return postService.findById(id)
                 .map(PostDto::new)
                 .orElseThrow();
-        }
+    }
+
 
     @DeleteMapping("/{id}")
-    public RsData<Void> deleteItem(@PathVariable long id) {
+    public RsData<Void> deleteItem(
+            @PathVariable long id
+    ) {
         Post post = postService.findById(id).get();
+
         postService.delete(post);
 
         return new RsData<>(
@@ -46,6 +56,7 @@ public class ApiV1PostController {
                 "%d번 글이 삭제되었습니다.".formatted(id)
         );
     }
+
 
     record PostModifyReqBody(
             @NotBlank
@@ -64,6 +75,7 @@ public class ApiV1PostController {
             @RequestBody @Valid PostModifyReqBody reqBody
     ) {
         Post post = postService.findById(id).get();
+
         postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData<>(
@@ -72,6 +84,7 @@ public class ApiV1PostController {
                 new PostDto(post)
         );
     }
+
 
     record PostWriteReqBody(
             @NotBlank
@@ -92,8 +105,12 @@ public class ApiV1PostController {
     }
 
     @PostMapping
-    public RsData<PostWriteResBody> writeItem(@RequestBody @Valid PostWriteReqBody reqBody) {
-        Post post = postService.write(reqBody.title, reqBody.content);
+    public RsData<PostWriteResBody> writeItem(
+            @RequestBody @Valid PostWriteReqBody reqBody
+    ) {
+        Member actor = memberService.findById(reqBody.authorId).get();
+
+        Post post = postService.write(actor, reqBody.title, reqBody.content);
 
         return new RsData<>(
                 "201-1",
