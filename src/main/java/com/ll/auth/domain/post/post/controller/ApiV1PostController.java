@@ -47,12 +47,12 @@ public class ApiV1PostController {
     @DeleteMapping("/{id}")
     public RsData<Void> deleteItem(
             @PathVariable long id,
-            long authorId,
-            String password
+            @RequestHeader("actorId") long actorId,
+            @RequestHeader("actorPassword") String actorPassword
     ) {
-        Member actor = memberService.findById(authorId).get();
+        Member actor = memberService.findById(actorId).get();
 
-        if (!actor.getPassword().equals(password))
+        if (!actor.getPassword().equals(actorPassword))
             throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
 
         Post post = postService.findById(id).get();
