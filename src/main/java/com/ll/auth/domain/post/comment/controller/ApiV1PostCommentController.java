@@ -1,6 +1,6 @@
 package com.ll.auth.domain.post.comment.controller;
 
-import com.ll.auth.domain.post.comment.entity.PostComment;
+import com.ll.auth.domain.post.comment.dto.PostCommentDto;
 import com.ll.auth.domain.post.post.entity.Post;
 import com.ll.auth.domain.post.post.service.PostService;
 import com.ll.auth.global.exceptions.ServiceException;
@@ -19,13 +19,18 @@ public class ApiV1PostCommentController {
     private final PostService postService;
 
     @GetMapping
-    public List<PostComment> getItems(
+    public List<PostCommentDto> getItems(
             @PathVariable long postId
     ) {
         Post post = postService.findById(postId).orElseThrow(
                 () -> new ServiceException("404-1", "%d번 글은 존재하지 않습니다.".formatted(postId))
         );
 
-        return post.getComments();
+        return post
+                .getComments()
+                .reversed()
+                .stream()
+                .map(PostCommentDto::new)
+                .toList();
     }
 }

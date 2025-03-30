@@ -23,4 +23,8 @@ public class Member extends BaseTime {
 
     @Column(unique = true, length = 50)
     private String apiKey;
+
+    public String getName() {
+        return this.nickname;
+    }
 }
