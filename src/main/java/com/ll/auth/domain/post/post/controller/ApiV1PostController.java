@@ -24,6 +24,7 @@ public class ApiV1PostController {
     private final MemberService memberService;
 
     private Member checkAuthentication(String credentials) {
+        credentials = credentials.substring("Bearer ".length());
         String[] credentialsBits = credentials.split("/", 2);
         long actorId = Long.parseLong(credentialsBits[0]);
         String actorPassword = credentialsBits[1];
