@@ -35,4 +35,8 @@ public class MemberService {
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
+
+    public Optional<Member> findByPassword2(String password2) {
+        return memberRepository.findByPassword2(password2);
+    }
 }
