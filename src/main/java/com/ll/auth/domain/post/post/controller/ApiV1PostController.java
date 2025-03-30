@@ -46,9 +46,12 @@ public class ApiV1PostController {
     @DeleteMapping("/{id}")
     public RsData<Void> deleteItem(
             @PathVariable long id,
-            @RequestHeader long actorId,
-            @RequestHeader String actorPassword
+            @RequestHeader String credentials
     ) {
+        String[] credentialsBits = credentials.split("/", 2);
+        long actorId = Long.parseLong(credentialsBits[0]);
+        String actorPassword = credentialsBits[1];
+
         Member actor = memberService.findById(actorId).get();
 
         if (!actor.getPassword().equals(actorPassword))
@@ -83,20 +86,23 @@ public class ApiV1PostController {
     public RsData<PostDto> modifyItem(
             @PathVariable long id,
             @RequestBody @Valid PostModifyReqBody reqBody,
-            @RequestHeader long actorId,
-            @RequestHeader String actorPassword
+            @RequestHeader String credentials
     ) {
-        Post post = postService.findById(id).get();
+        String[] credentialsBits = credentials.split("/", 2);
+        long actorId = Long.parseLong(credentialsBits[0]);
+        String actorPassword = credentialsBits[1];
 
         Member actor = memberService.findById(actorId).get();
 
         if (!actor.getPassword().equals(actorPassword))
             throw new ServiceException("401-1", "비밀번호가 일치하지 않습니다.");
 
-        postService.modify(post, reqBody.title, reqBody.content);
+        Post post = postService.findById(id).get();
 
         if (!post.getAuthor().equals(actor))
             throw new ServiceException("403-1", "작성자만 글을 수정할 권한이 있습니다.");
+
+        postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData<>(
                 "200-1",
@@ -119,9 +125,12 @@ public class ApiV1PostController {
     @PostMapping
     public RsData<PostDto> writeItem(
             @RequestBody @Valid PostWriteReqBody reqBody,
-            @RequestHeader long actorId,
-            @RequestHeader String actorPassword
+            @RequestHeader String credentials
     ) {
+        String[] credentialsBits = credentials.split("/", 2);
+        long actorId = Long.parseLong(credentialsBits[0]);
+        String actorPassword = credentialsBits[1];
+
         Member actor = memberService.findById(actorId).get();
 
         if (!actor.getPassword().equals(actorPassword))
