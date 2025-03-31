@@ -33,4 +33,25 @@ public class ApiV1PostCommentController {
                 .map(PostCommentDto::new)
                 .toList();
     }
+
+    @GetMapping("/{id}")
+    public PostCommentDto getItem(
+            @PathVariable long postId,
+            @PathVariable long id
+    ) {
+        Post post = postService.findById(postId).orElseThrow(
+                () -> new ServiceException("404-1", "%d번 글은 존재하지 않습니다.".formatted(postId))
+        );
+
+        return post
+                .getComments()
+                .reversed()
+                .stream()
+                .filter(comment -> comment.getId() == id)
+                .map(PostCommentDto::new)
+                .findFirst()
+                .orElseThrow(
+                        () -> new ServiceException("404-2", "%d번 댓글은 존재하지 않습니다.".formatted(id))
+                );
+    }
 }
