@@ -28,4 +28,5 @@ public class PostComment extends BaseTime {
     public void modify(String content) {
         this.content = content;
     }
+
 }
