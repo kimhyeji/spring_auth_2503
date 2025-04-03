@@ -82,6 +82,8 @@ public class ApiV1PostCommentController {
                 reqBody.content
         );
 
+        postService.flush();
+
         return new RsData<>(
                 "201-1",
                 "%d번 댓글이 작성되었습니다.".formatted(postComment.getId())
